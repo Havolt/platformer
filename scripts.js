@@ -1,32 +1,67 @@
+
+//Data sections
 let c = document.getElementById('game');
 let ctx = c.getContext('2d');
 
 let ctxData = {
     width: 960,
-    height: 540
+    height: 576,
+    tileSize: 48
+}
+
+let gameData = {
+    currLevel : []
 }
 
 let engineData = {
     gameStarted : false,
     activeFuncs : []
+    
 }
 
+let levelData = {
+    level1 : { level: 1, 
+        map: [ [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+    }
+}
 
+//Give canvas height, width and border
 function defineCanvasStyle(canvasId, width, height){
     canvasId.setAttribute('width', width + 'px');
     canvasId.setAttribute('height', height + 'px');
     canvasId.style.border = "1px solid black";
 }
 
-function testFunc1(){console.log('a')};
-function testFunc2(){console.log('b')};
-
-function gameEngine(){
-    for(let i = 0; i < engineData.activeFuncs.length; i++){
-        engineData.activeFuncs[i]();
-    }
-    //setTimeout(gameEngine, 20);
+//Clears Canvas
+function clearCanvas(){
+    ctx.clearRect(0,0,ctxData.width, ctxData.height);
 }
+
+function drawLevel(obj){
+    
+   
+   for(let i = 0; i < obj.level[0].length; i++){
+    for(let j = 0; j < obj.level[0][i].length; j++){
+        console.log(obj.level[0][i][j])
+    }
+   }
+     
+}
+
+
+
+
 
 function drawMenu(){
     //Create linear gradient
@@ -42,7 +77,7 @@ function drawMenu(){
     //Create button
     ctx.strokeStyle='#fefefe';
     ctx.strokeRect((ctxData.width /2)-(menuData.buttonWidth /2),(ctxData.height /2)-(menuData.buttonHeight /2) - 20,menuData.buttonWidth, menuData.buttonHeight)
-    ctx.fillStyle="#2b67c6";
+    ctx.fillStyle="#4b4b4b";
     ctx.fillRect((ctxData.width /2)-(menuData.buttonWidth /2),(ctxData.height /2)-(menuData.buttonHeight /2) - 20,menuData.buttonWidth, menuData.buttonHeight);
     ctx.fillStyle="#fefefe";
     ctx.font="32px Arial"
@@ -50,18 +85,29 @@ function drawMenu(){
 }
 
 
+//Game engine all functions pass through this from engineData.activeFuncs
+function gameEngine(){
+    for(let i = 0; i < engineData.activeFuncs.length; i++){
+        engineData.activeFuncs[i].func(engineData.activeFuncs[i].args);
+    }
+    //setTimeout(gameEngine, 20);
+}
+
+//Initializes application
 (function initApp(){
     defineCanvasStyle(c, ctxData.width , ctxData.height);
     drawMenu();
     gameEngine();
 })()
 
+
+//Adds event listener to start game on keydown of Enter button
 document.addEventListener('keydown', function(e){
-    console.log(e.keyCode)
     if(!engineData.gameStarted){
         if(e.keyCode == 13){
-            engineData.activeFuncs.push(testFunc1);
-            engineData.activeFuncs.push(testFunc2);
+            engineData.activeFuncs.push({func: clearCanvas, args: {}});
+            gameData.currLevel.push(levelData.level1.map);
+            engineData.activeFuncs.push({func: drawLevel, args: {level : gameData.currLevel}});
             engineData.gameStarted = true;
             gameEngine();
         }
