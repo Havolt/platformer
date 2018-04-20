@@ -48,12 +48,16 @@ function clearCanvas(){
     ctx.clearRect(0,0,ctxData.width, ctxData.height);
 }
 
+//Draws level
 function drawLevel(obj){
     
-   
    for(let i = 0; i < obj.level[0].length; i++){
     for(let j = 0; j < obj.level[0][i].length; j++){
         console.log(obj.level[0][i][j])
+        
+        ctx.fillStyle="lightblue";
+        if(obj.level[0][i][j] == 1){ctx.fillStyle='black'}
+        ctx.fillRect(j * ctxData.tileSize, i * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
     }
    }
      
