@@ -16,7 +16,15 @@ let gameData = {
 let engineData = {
     gameStarted : false,
     activeFuncs : []
-    
+}
+
+let playerData = {
+    width: 26,
+    height: 44,
+    color: 'black',
+    xPos: 50,
+    yPos: 400,
+    alive: false
 }
 
 let levelData = {
@@ -56,11 +64,28 @@ function drawLevel(obj){
         console.log(obj.level[0][i][j])
         
         ctx.fillStyle="lightblue";
-        if(obj.level[0][i][j] == 1){ctx.fillStyle='black'}
+        if(obj.level[0][i][j] == 1){ctx.fillStyle='green'}
         ctx.fillRect(j * ctxData.tileSize, i * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
     }
    }
      
+}
+
+
+//draw the player character
+function drawPlayer(pd){
+
+    if(pd.alive){
+        ctx.fillStyle = pd.color;
+        ctx.fillRect(pd.xPos, pd.yPos, pd.width, pd.height)
+    }
+
+}
+
+function movePlayer(e, pd){
+
+    console.log(pd)
+
 }
 
 
@@ -112,8 +137,11 @@ document.addEventListener('keydown', function(e){
             engineData.activeFuncs.push({func: clearCanvas, args: {}});
             gameData.currLevel.push(levelData.level1.map);
             engineData.activeFuncs.push({func: drawLevel, args: {level : gameData.currLevel}});
+            engineData.activeFuncs.push({func: drawPlayer, args: playerData});
             engineData.gameStarted = true;
+            playerData.alive = true;
             gameEngine();
+            document.addEventListener('keydown', function(){movePlayer(event, playerData)})
         }
     }
 })
