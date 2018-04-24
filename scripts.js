@@ -24,6 +24,7 @@ let playerData = {
     color: 'black',
     xPos: 50,
     yPos: 400,
+    speed: 0,
     alive: false
 }
 
@@ -61,8 +62,6 @@ function drawLevel(obj){
     
    for(let i = 0; i < obj.level[0].length; i++){
     for(let j = 0; j < obj.level[0][i].length; j++){
-        console.log(obj.level[0][i][j])
-        
         ctx.fillStyle="lightblue";
         if(obj.level[0][i][j] == 1){ctx.fillStyle='green'}
         ctx.fillRect(j * ctxData.tileSize, i * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
@@ -82,9 +81,24 @@ function drawPlayer(pd){
 
 }
 
-function movePlayer(e, pd){
+//changes the players speed
+function changePlayerSpeed(e, pd){
+   if(e.keyCode == 37 && pd.speed > -5){
+       if(pd.speed > 0){ pd.speed -= 2;}
+       else{ pd.speed -= 0.5;}
+   }
+   else if(e.keyCode == 39 && pd.speed < 5){
+       if(pd.speed < 0){ pd.speed += 2;}
+       else{ pd.speed += 0.5; }
+   }
+}
 
-    console.log(pd)
+//moves player xPos based on speed
+function movePlayer(pd){
+
+    if(pd.speed != 0){
+        pd.xPos += pd.speed;
+    }
 
 }
 
@@ -119,7 +133,7 @@ function gameEngine(){
     for(let i = 0; i < engineData.activeFuncs.length; i++){
         engineData.activeFuncs[i].func(engineData.activeFuncs[i].args);
     }
-    //setTimeout(gameEngine, 20);
+    setTimeout(gameEngine, 100);
 }
 
 //Initializes application
@@ -138,10 +152,11 @@ document.addEventListener('keydown', function(e){
             gameData.currLevel.push(levelData.level1.map);
             engineData.activeFuncs.push({func: drawLevel, args: {level : gameData.currLevel}});
             engineData.activeFuncs.push({func: drawPlayer, args: playerData});
+            engineData.activeFuncs.push({func: movePlayer, args: playerData});
             engineData.gameStarted = true;
             playerData.alive = true;
             gameEngine();
-            document.addEventListener('keydown', function(){movePlayer(event, playerData)})
+            document.addEventListener('keydown', function(){changePlayerSpeed(event, playerData)})
         }
     }
 })
