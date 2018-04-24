@@ -25,6 +25,7 @@ let playerData = {
     xPos: 50,
     yPos: 400,
     speed: 0,
+    isMoving: false,
     alive: false
 }
 
@@ -82,15 +83,52 @@ function drawPlayer(pd){
 }
 
 //changes the players speed
-function changePlayerSpeed(e, pd){
+function changePlayerSpeed(e, pd, ctd){
    if(e.keyCode == 37 && pd.speed > -5){
-       if(pd.speed > 0){ pd.speed -= 2;}
-       else{ pd.speed -= 0.5;}
+       if(pd.speed > 0 && pd.xPos > 0){ pd.speed -= 2;}
+       else if(pd.speed > -2 && pd.xPos > 0){pd.speed--}
+       else if(pd.xPos > 0){ pd.speed -= 0.25; console.log(pd.xPos)}
+       pd.isMoving = true;
    }
+   
    else if(e.keyCode == 39 && pd.speed < 5){
-       if(pd.speed < 0){ pd.speed += 2;}
-       else{ pd.speed += 0.5; }
+       if(pd.speed < 0 && pd.xPos < (ctd.width - pd.width)){ pd.speed += 2;}
+       else if(pd.speed < 2 && pd.xPos < (ctd.width - pd.width)){pd.speed++}
+       else if(pd.xPos < (ctd.width - pd.width)){ pd.speed += 0.25; }
+       pd.isMoving = true;
    }
+   if(pd.xPos < 0){
+        pd.xPos = 0;
+        pd.speed = 0;
+    }
+   if(pd.xPos > (ctd.width - pd.width)){
+        pd.xPos = (ctd.width - pd.width);
+        pd.speed = 0;
+    }
+}
+
+//Tells the playerData.isMoving if player no longer is
+function revertPlayerSpeed(e, pd){
+    if(e.keyCode == 37){
+        pd.isMoving = false;
+    }else if(e.keyCode == 39){
+        pd.isMoving = false;
+    }
+}
+
+
+function slowPlayer(pd){
+    
+    if(!pd.isMoving){
+        if(pd.speed > 0){
+            pd.speed -= 1
+            if(pd.speed < 0){pd.speed = 0}
+        }
+        else if(pd.speed < 0){
+            pd.speed += 1;
+            if(pd.speed > 0){pd.speed = 0;}
+        }
+    }
 }
 
 //moves player xPos based on speed
@@ -133,7 +171,8 @@ function gameEngine(){
     for(let i = 0; i < engineData.activeFuncs.length; i++){
         engineData.activeFuncs[i].func(engineData.activeFuncs[i].args);
     }
-    setTimeout(gameEngine, 100);
+    //console.log(playerData.speed)
+    setTimeout(gameEngine, 50);
 }
 
 //Initializes application
@@ -153,10 +192,12 @@ document.addEventListener('keydown', function(e){
             engineData.activeFuncs.push({func: drawLevel, args: {level : gameData.currLevel}});
             engineData.activeFuncs.push({func: drawPlayer, args: playerData});
             engineData.activeFuncs.push({func: movePlayer, args: playerData});
+            engineData.activeFuncs.push({func: slowPlayer, args: playerData});
             engineData.gameStarted = true;
             playerData.alive = true;
             gameEngine();
-            document.addEventListener('keydown', function(){changePlayerSpeed(event, playerData)})
+            document.addEventListener('keydown', function(){changePlayerSpeed(event, playerData, ctxData)})
+            document.addEventListener('keyup', function(){revertPlayerSpeed(event, playerData)})
         }
     }
 })
