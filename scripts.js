@@ -24,7 +24,9 @@ let playerData = {
     color: 'black',
     xPos: 50,
     yPos: 400,
+    gravity: 0,
     speed: 0,
+    inAir: true,
     isMoving: false,
     alive: false
 }
@@ -60,26 +62,22 @@ function clearCanvas(){
 
 //Draws level
 function drawLevel(obj){
-    
    for(let i = 0; i < obj.level[0].length; i++){
     for(let j = 0; j < obj.level[0][i].length; j++){
         ctx.fillStyle="lightblue";
         if(obj.level[0][i][j] == 1){ctx.fillStyle='green'}
         ctx.fillRect(j * ctxData.tileSize, i * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
     }
-   }
-     
+   }  
 }
 
 
 //draw the player character
 function drawPlayer(pd){
-
     if(pd.alive){
         ctx.fillStyle = pd.color;
         ctx.fillRect(pd.xPos, pd.yPos, pd.width, pd.height)
     }
-
 }
 
 //changes the players speed
@@ -87,7 +85,7 @@ function changePlayerSpeed(e, pd, ctd){
    if(e.keyCode == 37 && pd.speed > -5){
        if(pd.speed > 0 && pd.xPos > 0){ pd.speed -= 2;}
        else if(pd.speed > -2 && pd.xPos > 0){pd.speed--}
-       else if(pd.xPos > 0){ pd.speed -= 0.25; console.log(pd.xPos)}
+       else if(pd.xPos > 0){ pd.speed -= 0.25;}
        pd.isMoving = true;
    }
    
@@ -117,6 +115,7 @@ function revertPlayerSpeed(e, pd){
 }
 
 
+//slows the player down if keydown is no longer pressed
 function slowPlayer(pd){
     
     if(!pd.isMoving){
@@ -133,12 +132,20 @@ function slowPlayer(pd){
 
 //moves player xPos based on speed
 function movePlayer(pd){
-
     if(pd.speed != 0){
         pd.xPos += pd.speed;
     }
+}
+
+
+function groundScan(argz){
+    let pd = argz[0].xPos + argz[0].height;
+    let ld = argz[1][0];
+    
+    console.log(pd)
 
 }
+
 
 
 
@@ -193,6 +200,7 @@ document.addEventListener('keydown', function(e){
             engineData.activeFuncs.push({func: drawPlayer, args: playerData});
             engineData.activeFuncs.push({func: movePlayer, args: playerData});
             engineData.activeFuncs.push({func: slowPlayer, args: playerData});
+            engineData.activeFuncs.push({func: groundScan, args:[ playerData, gameData.currLevel]});
             engineData.gameStarted = true;
             playerData.alive = true;
             gameEngine();
