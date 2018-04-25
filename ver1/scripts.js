@@ -83,18 +83,19 @@ function drawPlayer(pd){
 //changes the players speed
 function changePlayerSpeed(e, pd, ctd){
    if(e.keyCode == 37 && pd.speed > -5){
-       if(pd.speed > 0 && pd.xPos > 0){ pd.speed -= 2;}
+       if(pd.speed > 0 && pd.xPos >= 0){ pd.speed -= 3;}
        else if(pd.speed > -2 && pd.xPos > 0){pd.speed--}
        else if(pd.xPos > 0){ pd.speed -= 0.25;}
-       pd.isMoving = true;
    }
    
    else if(e.keyCode == 39 && pd.speed < 5){
-       if(pd.speed < 0 && pd.xPos < (ctd.width - pd.width)){ pd.speed += 2;}
+       if(pd.speed <= 0 && pd.xPos < (ctd.width - pd.width)){ pd.speed += 3;}
        else if(pd.speed < 2 && pd.xPos < (ctd.width - pd.width)){pd.speed++}
        else if(pd.xPos < (ctd.width - pd.width)){ pd.speed += 0.25; }
-       pd.isMoving = true;
    }
+
+   if(e.keyCode == 39 || e.keyCode == 37){pd.isMoving = true;}
+
    if(pd.xPos < 0){
         pd.xPos = 0;
         pd.speed = 0;
@@ -112,6 +113,7 @@ function revertPlayerSpeed(e, pd){
     }else if(e.keyCode == 39){
         pd.isMoving = false;
     }
+    
 }
 
 
@@ -139,10 +141,13 @@ function movePlayer(pd){
 
 
 function groundScan(argz){
-    let pd = argz[0].xPos + argz[0].height;
+    let pd = argz[0].yPos + argz[0].height;
     let ld = argz[1][0];
+
+    for(let i = 0; i < ld.length; i++){
+        //console.log(pd)
+    }
     
-    console.log(pd)
 
 }
 
@@ -177,6 +182,7 @@ function drawMenu(){
 function gameEngine(){
     for(let i = 0; i < engineData.activeFuncs.length; i++){
         engineData.activeFuncs[i].func(engineData.activeFuncs[i].args);
+        console.log(playerData.isMoving)
     }
     //console.log(playerData.speed)
     setTimeout(gameEngine, 50);
