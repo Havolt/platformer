@@ -116,9 +116,15 @@ function checkArea(gd, pd){
 
 function checkMove(x1,x2,y1,y2){
     //console.log(x1)
-    if( ((playerData.xPos + playerData.moveSpeed + playerData.width) >= x1 && (playerData.xPos + playerData.moveSpeed + playerData.width) <= x2) && playerData.currTileY == (y1 / ctxData.tileSize) ){
+    if(playerData.currTileY == (y1 / ctxData.tileSize)){
         
+        if(((playerData.xPos + playerData.width + playerData.moveSpeed) >= x1) && ((playerData.xPos + playerData.width + playerData.moveSpeed) <= x2) && playerData.xPos + playerData.width < x1 ){
+            playerData.canMoveRight = false;
+            console.log('gop')
+        }
+
     }
+    
 }
 
 
