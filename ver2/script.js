@@ -27,16 +27,20 @@ let playerData = {
     xPos: 50,
     yPos: 440,
     moveSpeed: 5,
+    jumpSpeed: 9,
+    jumpTimer: 0,
     velocity: 0,
     status: 'alive',
     isMoving: false,
     canMoveRight : true,
     canMoveLeft: false,
+    canJump: true,
     inAir: false,
     currTileX: 0,
     currTileY: 0,
     keysDown: {'37': false,
-                '39': false}
+                '39': false,
+                '32' : false}
 }
 
 
@@ -77,6 +81,7 @@ function playerPhysics(){
     //console.log(playerData.direction)
     playerWalk();
     checkArea(gameData.currLevel.map, playerData)
+    playerJump();
 }
 
 //Gets the players current tile location
@@ -87,12 +92,28 @@ function getCurrTile(gd, pd){
 
 //Lets player walk
 function playerWalk(){
-    if(playerData.keysDown['39']){
+    if(playerData.keysDown['39'] && playerData.canMoveRight){
         playerData.xPos += playerData.moveSpeed;
     }
-    else if(playerData.keysDown['37']){
+    else if(playerData.keysDown['37'] && playerData.canMoveLeft){
         playerData.xPos -= playerData.moveSpeed;
     }
+}
+
+function playerJump(){
+    
+    if(playerData.jumpTimer == 7){
+        playerData.canJump = false;
+    }
+    if(playerData.keysDown['32'] && playerData.canJump){
+        playerData.yPos -= playerData.jumpSpeed;
+        playerData.jumpTimer++;
+        playerData.inAir = true;
+    }
+    if(!playerData.keysDown['32'] && playerData.inAir){
+        playerData.jumpTimer = 7;
+    }
+    
 }
 
 function checkArea(gd, pd){
@@ -120,9 +141,11 @@ function checkMove(x1,x2,y1,y2){
         
         if(((playerData.xPos + playerData.width + playerData.moveSpeed) >= x1) && ((playerData.xPos + playerData.width + playerData.moveSpeed) <= x2) && playerData.xPos + playerData.width < x1 ){
             playerData.canMoveRight = false;
-            console.log('gop')
         }
-
+        else if(((playerData.xPos - playerData.moveSpeed) >= x1) && ((playerData.xPos - playerData.moveSpeed) <= x2) && playerData.xPos > x2 ){
+            playerData.canMoveLeft = false;
+            console.log('lol')
+        }
     }
     
 }
@@ -159,10 +182,13 @@ function gameEngine(){
 //Keydown listeners
 document.addEventListener('keydown', function(e){
     if(e.keyCode == 37){
-        playerData.keysDown['37'] = true
+        playerData.keysDown['37'] = true;
     }
     else if(e.keyCode == 39){
-        playerData.keysDown['39'] = true
+        playerData.keysDown['39'] = true;
+    }
+    if(e.keyCode == 32){
+        playerData.keysDown['32'] = true;
     }
     
 })
@@ -173,6 +199,9 @@ document.addEventListener('keyup', function(e){
     }
     else if(e.keyCode == 39){
         playerData.keysDown['39'] = false;
+    }
+    if(e.keyCode == 32){
+        playerData.keysDown['32'] = false;
     }
 })
 
