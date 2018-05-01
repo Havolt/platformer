@@ -18,6 +18,18 @@ let gameData = {
     currLevel : []
 }
 
+//Data for player
+let playerData = {
+    width: 20,
+    height: 40,
+    color: 'black',
+    xPos: 50,
+    yPos: 440,
+    velocity: 0,
+    direction: 1,
+    status: 'alive'
+}
+
 
 //Sets the css of canvas
 function setCanvasStyle(cId, width, height){
@@ -35,11 +47,16 @@ function drawLevelLoop(level){
 
 function drawLevel(tile, y, x){
     if(tile == 0){
-        ctx.fillStyle='blue';
+        ctx.fillStyle='lightblue';
     }else if(tile == 1){
         ctx.fillStyle='green';
     }
     ctx.fillRect(x * ctxData.tileSize, y * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
+}
+
+function drawPlayerChar(pd){
+    ctx.fillStyle=pd.color;
+    ctx.fillRect(pd.xPos, pd.yPos, pd.width, pd.height);
 }
 
 //Initialize startup functions
@@ -47,6 +64,7 @@ function initApp(){
     setCanvasStyle(gc, ctxData.width, ctxData.height);
     gameData.currLevel = levels.level1;
     drawLevelLoop(gameData.currLevel);
+    drawPlayerChar(playerData);
 }
 
 
