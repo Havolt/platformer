@@ -26,10 +26,12 @@ let playerData = {
     color: 'black',
     xPos: 50,
     yPos: 440,
+    moveSpeed: 5,
     velocity: 0,
-    direction: 0,
     status: 'alive',
     isMoving: false,
+    canMoveRight : true,
+    canMoveLeft: false,
     inAir: false,
     currTileX: 0,
     currTileY: 0,
@@ -74,19 +76,48 @@ function playerPhysics(){
     getCurrTile(gameData.currLevel.map, playerData);
     //console.log(playerData.direction)
     playerWalk();
+    checkArea(gameData.currLevel.map, playerData)
 }
 
+//Gets the players current tile location
 function getCurrTile(gd, pd){
     playerData.currTileX = Math.floor(pd.xPos / ctxData.tileSize);
     playerData.currTileY = Math.floor(pd.yPos / ctxData.tileSize)
 }
 
+//Lets player walk
 function playerWalk(){
     if(playerData.keysDown['39']){
-        playerData.xPos += 5;
+        playerData.xPos += playerData.moveSpeed;
     }
     else if(playerData.keysDown['37']){
-        playerData.xPos -= 5;
+        playerData.xPos -= playerData.moveSpeed;
+    }
+}
+
+function checkArea(gd, pd){
+    playerData.canMoveLeft = true;
+    playerData.canMoveRight = true;
+    let counter = 0;
+    for( let i = 0; i < gd.length; i++){
+        for(let j = 0; j < gd[i].length; j++){
+            if((i >= (pd.currTileY -1) && i <= (pd.currTileY + 1) && ((j >= (pd.currTileX -1) && j <= (pd.currTileX + 1))))){
+                if(gd[i][j] == 1){
+                   let x1 = j * ctxData.tileSize;
+                   let x2 = (j+1) * ctxData.tileSize
+                   let y1 = i * ctxData.tileSize;
+                   let y2 = (i+1) * ctxData.tileSize;
+                   checkMove(x1, x2, y1, y2);
+                }
+            }
+        }
+    }
+}
+
+function checkMove(x1,x2,y1,y2){
+    //console.log(x1)
+    if( ((playerData.xPos + playerData.moveSpeed + playerData.width) >= x1 && (playerData.xPos + playerData.moveSpeed + playerData.width) <= x2) && playerData.currTileY == (y1 / ctxData.tileSize) ){
+        
     }
 }
 
