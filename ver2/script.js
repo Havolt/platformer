@@ -15,7 +15,8 @@ let ctxData = {
 
 //Data for game
 let gameData = {
-    currLevel : []
+    currLevel : [],
+    fps: 1000
 }
 
 //Data for player
@@ -26,8 +27,9 @@ let playerData = {
     xPos: 50,
     yPos: 440,
     velocity: 0,
-    direction: 1,
-    status: 'alive'
+    direction: 0,
+    status: 'alive',
+    isMoving: false
 }
 
 
@@ -65,7 +67,33 @@ function initApp(){
     gameData.currLevel = levels.level1;
     drawLevelLoop(gameData.currLevel);
     drawPlayerChar(playerData);
+    gameEngine('sup'); 
 }
+
+function gameEngine(){
+    console.log('frame');
+    setTimeout(function(){
+        gameEngine()
+    }, gameData.fps);
+}
+
+//Keydown listeners
+document.addEventListener('keydown', function(e){
+    if(e.keyCode == 37){
+        playerData.direction = -1;
+    }
+    else if(e.keyCode == 39){
+        playerData.direction = 1;
+    }
+    console.log(playerData.direction)
+})
+
+document.addEventListener('keyup', function(e){
+    if(e.keyCode == 37 || e.keyCode == 39){
+        playerData.direction = 0;
+    }
+    console.log(playerData.direction)
+})
 
 
 window.onload = function(){
