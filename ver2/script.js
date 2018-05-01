@@ -102,6 +102,10 @@ function playerWalk(){
 
 function playerJump(){
     
+    if(!playerData.inAir){
+        playerData.jumpTimer = 0;
+        playerData.canJump = true;
+    }
     if(playerData.jumpTimer == 7){
         playerData.canJump = false;
     }
@@ -137,7 +141,7 @@ function checkArea(gd, pd){
 
 function checkMove(x1,x2,y1,y2){
     //console.log(x1)
-    if(playerData.currTileY == (y1 / ctxData.tileSize)){
+    if((playerData.yPos >= y1 && playerData.yPos <= y2) || ((playerData.yPos + playerData.height > y1 && playerData.yPos + playerData.height < y2))){
         
         if(((playerData.xPos + playerData.width + playerData.moveSpeed) >= x1) && ((playerData.xPos + playerData.width + playerData.moveSpeed) <= x2) && playerData.xPos + playerData.width < x1 ){
             playerData.canMoveRight = false;
