@@ -16,7 +16,7 @@ let ctxData = {
 //Data for game
 let gameData = {
     currLevel : [],
-    fps: 1000
+    fps: 1000/30
 }
 
 //Data for player
@@ -29,7 +29,10 @@ let playerData = {
     velocity: 0,
     direction: 0,
     status: 'alive',
-    isMoving: false
+    isMoving: false,
+    inAir: false,
+    currTileX: 0,
+    currTileY: 0
 }
 
 
@@ -61,21 +64,57 @@ function drawPlayerChar(pd){
     ctx.fillRect(pd.xPos, pd.yPos, pd.width, pd.height);
 }
 
+
+
+
+//Control players movement
+function playerPhysics(){
+    getCurrTile(gameData.currLevel.map, playerData);
+    playerWalk();
+}
+
+function getCurrTile(gd, pd){
+    playerData.currTileX = Math.floor(pd.xPos / ctxData.tileSize);
+    playerData.currTileY = Math.floor(pd.yPos / ctxData.tileSize)
+}
+
+function playerWalk(){
+    if(playerData.direction == 1){
+        playerData.xPos += 5;
+    }
+    else if(playerData.direction == -1){
+        playerData.xPos -= 5;
+    }
+}
+
+
+
+
+
 //Initialize startup functions
 function initApp(){
     setCanvasStyle(gc, ctxData.width, ctxData.height);
     gameData.currLevel = levels.level1;
+    playerPhysics();
     drawLevelLoop(gameData.currLevel);
     drawPlayerChar(playerData);
-    gameEngine('sup'); 
+    gameEngine(); 
 }
 
 function gameEngine(){
-    console.log('frame');
+    ctx.clearRect(0,0,ctxData.width, ctxData.height);
+    drawLevelLoop(gameData.currLevel);
+    drawPlayerChar(playerData);
+    playerPhysics();
     setTimeout(function(){
         gameEngine()
     }, gameData.fps);
 }
+
+
+
+
+
 
 //Keydown listeners
 document.addEventListener('keydown', function(e){
@@ -85,14 +124,12 @@ document.addEventListener('keydown', function(e){
     else if(e.keyCode == 39){
         playerData.direction = 1;
     }
-    console.log(playerData.direction)
 })
 
 document.addEventListener('keyup', function(e){
     if(e.keyCode == 37 || e.keyCode == 39){
         playerData.direction = 0;
     }
-    console.log(playerData.direction)
 })
 
 
