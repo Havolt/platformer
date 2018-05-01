@@ -32,7 +32,9 @@ let playerData = {
     isMoving: false,
     inAir: false,
     currTileX: 0,
-    currTileY: 0
+    currTileY: 0,
+    keysDown: {'37': false,
+                '39': false}
 }
 
 
@@ -70,6 +72,7 @@ function drawPlayerChar(pd){
 //Control players movement
 function playerPhysics(){
     getCurrTile(gameData.currLevel.map, playerData);
+    //console.log(playerData.direction)
     playerWalk();
 }
 
@@ -79,10 +82,10 @@ function getCurrTile(gd, pd){
 }
 
 function playerWalk(){
-    if(playerData.direction == 1){
+    if(playerData.keysDown['39']){
         playerData.xPos += 5;
     }
-    else if(playerData.direction == -1){
+    else if(playerData.keysDown['37']){
         playerData.xPos -= 5;
     }
 }
@@ -119,16 +122,20 @@ function gameEngine(){
 //Keydown listeners
 document.addEventListener('keydown', function(e){
     if(e.keyCode == 37){
-        playerData.direction = -1;
+        playerData.keysDown['37'] = true
     }
     else if(e.keyCode == 39){
-        playerData.direction = 1;
+        playerData.keysDown['39'] = true
     }
+    
 })
 
 document.addEventListener('keyup', function(e){
-    if(e.keyCode == 37 || e.keyCode == 39){
-        playerData.direction = 0;
+    if(e.keyCode == 37){
+        playerData.keysDown['37'] = false;
+    }
+    else if(e.keyCode == 39){
+        playerData.keysDown['39'] = false;
     }
 })
 
