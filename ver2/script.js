@@ -24,12 +24,12 @@ let playerData = {
     width: 20,
     height: 40,
     color: 'black',
-    xPos: 50,
-    yPos: 440,
+    xPos: 0,
+    yPos: 0,
     moveSpeed: 1,
     jumpSpeed: 8,
     jumpTimer: 0,
-    jumpTimerMax: 9,
+    jumpTimerMax: 10,
     velocity: 0,
     status: 'alive',
     isMoving: false,
@@ -64,6 +64,12 @@ function drawLevel(tile, y, x){
         ctx.fillStyle='lightblue';
     }else if(tile == 1){
         ctx.fillStyle='green';
+    }
+    else if(tile == 2){
+        ctx.fillStyle='gold';
+    }
+    else if(tile == 3){
+        ctx.fillStyle='red';
     }
     ctx.fillRect(x * ctxData.tileSize, y * ctxData.tileSize, ctxData.tileSize, ctxData.tileSize);
 }
@@ -148,6 +154,19 @@ function checkArea(gd, pd){
                    checkMove(x1, x2, y1, y2, gd[i][j]);
                    checkGround(x1, x2, y1, y2, gd[i][j]);
                    
+                    if((playerData.xPos >= (x1 + 5) && playerData.xPos <= (x2 - 5)) || (playerData.xPos + playerData.width >= (x1 + 5) && playerData.xPos + playerData.width <= (x2 - 5))){
+                        if((playerData.yPos >= (y1 + 12) && playerData.yPos <= (y2)) || (playerData.yPos + playerData.height >= (y1 + 12) && playerData.yPos + playerData.height <= (y2))){
+                            if(gd[i][j] == 2){
+                                checkWin(x1, x2, y1, y2, gd[i][j]);
+                            }
+                            if(gd[i][j] == 3){
+                                checkDeath();
+                            }
+                        }
+                    }
+                
+                   
+                   
                 
             }
         }
@@ -179,14 +198,33 @@ function checkGround(x1, x2, y1, y2, tileType){
     }
 }
 
+function checkWin(){
+    console.log('winner')
+    initMap(gameData.currLevel.nextLevel);
+}
+
+function checkDeath(){
+    console.log('you died');
+    initMap(gameData.currLevel)
+}
 
 
+
+//createsMap and settings
+function initMap(gd){
+    gameData.currLevel = gd;
+    playerData.canJump = true;
+    playerData.inAir = false;
+    playerData.jumpTimer = 0;
+    playerData.xPos = gd.playerX;
+    playerData.yPos = gd.playerY;
+}
 
 
 //Initialize startup functions
 function initApp(){
     setCanvasStyle(gc, ctxData.width, ctxData.height);
-    gameData.currLevel = levels.level1;
+    initMap(levels.level1);
     playerPhysics();
     drawLevelLoop(gameData.currLevel);
     drawPlayerChar(playerData);
