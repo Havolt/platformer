@@ -27,7 +27,7 @@ let playerData = {
     xPos: 50,
     yPos: 440,
     moveSpeed: 5,
-    jumpSpeed: 9,
+    jumpSpeed: 8,
     jumpTimer: 0,
     velocity: 0,
     status: 'alive',
@@ -79,9 +79,12 @@ function drawPlayerChar(pd){
 function playerPhysics(){
     getCurrTile(gameData.currLevel.map, playerData);
     //console.log(playerData.direction)
-    playerWalk();
+    playerData.inAir = true;
     checkArea(gameData.currLevel.map, playerData)
+    playerWalk();
     playerJump();
+    playerGravity();
+    if(playerData.inAir){console.log(playerData.inAir)}
 }
 
 //Gets the players current tile location
@@ -120,6 +123,13 @@ function playerJump(){
     
 }
 
+function playerGravity(){
+
+    if((playerData.jumpTimer == 0 || playerData.jumpTimer == 7) && playerData.inAir){
+        playerData.yPos += playerData.jumpSpeed;
+    }
+}
+
 function checkArea(gd, pd){
     playerData.canMoveLeft = true;
     playerData.canMoveRight = true;
@@ -127,31 +137,44 @@ function checkArea(gd, pd){
     for( let i = 0; i < gd.length; i++){
         for(let j = 0; j < gd[i].length; j++){
             if((i >= (pd.currTileY -1) && i <= (pd.currTileY + 1) && ((j >= (pd.currTileX -1) && j <= (pd.currTileX + 1))))){
-                if(gd[i][j] == 1){
+                
                    let x1 = j * ctxData.tileSize;
                    let x2 = (j+1) * ctxData.tileSize
                    let y1 = i * ctxData.tileSize;
                    let y2 = (i+1) * ctxData.tileSize;
-                   checkMove(x1, x2, y1, y2);
-                }
+                   checkMove(x1, x2, y1, y2, gd[i][j]);
+                   checkGround(x1, x2, y1, y2, gd[i][j]);
+                   
+                
             }
         }
     }
 }
 
-function checkMove(x1,x2,y1,y2){
-    //console.log(x1)
-    if((playerData.yPos >= y1 && playerData.yPos <= y2) || ((playerData.yPos + playerData.height > y1 && playerData.yPos + playerData.height < y2))){
-        
-        if(((playerData.xPos + playerData.width + playerData.moveSpeed) >= x1) && ((playerData.xPos + playerData.width + playerData.moveSpeed) <= x2) && playerData.xPos + playerData.width < x1 ){
-            playerData.canMoveRight = false;
-        }
-        else if(((playerData.xPos - playerData.moveSpeed) >= x1) && ((playerData.xPos - playerData.moveSpeed) <= x2) && playerData.xPos > x2 ){
-            playerData.canMoveLeft = false;
-            console.log('lol')
+function checkMove(x1,x2,y1,y2, tileNum){
+    //console.log(tileNum)
+    if(tileNum == 1){
+        if((playerData.yPos >= y1 && playerData.yPos <= y2) || ((playerData.yPos + playerData.height > y1 && playerData.yPos + playerData.height < y2))){
+            if(((playerData.xPos + playerData.width + playerData.moveSpeed) >= x1) && ((playerData.xPos + playerData.width + playerData.moveSpeed) <= x2) && playerData.xPos + playerData.width < x1 ){
+                playerData.canMoveRight = false;
+            }
+            else if(((playerData.xPos - playerData.moveSpeed) >= x1) && ((playerData.xPos - playerData.moveSpeed) <= x2) && playerData.xPos > x2 ){
+                playerData.canMoveLeft = false;
+                console.log('lol')
+            }
         }
     }
+}
+
+function checkGround(x1, x2, y1, y2, tileType){
     
+    if(tileType == 1){
+        if(playerData.xPos >= x1 && playerData.xPos <= x2){
+            if(playerData.yPos + playerData.height == y1){
+                playerData.inAir = false;
+            }
+        }
+    }
 }
 
 
