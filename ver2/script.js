@@ -114,7 +114,7 @@ function playerWalk(){
 
 function playerJump(){
     
-    if(!playerData.inAir){
+    if(!playerData.inAir && !playerData.keysDown['32']){
         playerData.jumpTimer = 0;
         playerData.canJump = true;
     }
@@ -153,6 +153,9 @@ function checkArea(gd, pd){
                    let y2 = (i+1) * ctxData.tileSize;
                    checkMove(x1, x2, y1, y2, gd[i][j]);
                    checkGround(x1, x2, y1, y2, gd[i][j]);
+                   checkCeiling(x1, x2, y1, y2, gd[i][j]);
+
+                   
                    
                     if((playerData.xPos >= (x1 + 5) && playerData.xPos <= (x2 - 5)) || (playerData.xPos + playerData.width >= (x1 + 5) && playerData.xPos + playerData.width <= (x2 - 5))){
                         if((playerData.yPos >= (y1 + 12) && playerData.yPos <= (y2)) || (playerData.yPos + playerData.height >= (y1 + 12) && playerData.yPos + playerData.height <= (y2))){
@@ -162,6 +165,7 @@ function checkArea(gd, pd){
                             if(gd[i][j] == 3){
                                 checkDeath();
                             }
+                            
                         }
                     }
                 
@@ -184,15 +188,31 @@ function checkMove(x1,x2,y1,y2, tileNum){
                 playerData.canMoveLeft = false;
             }
         }
+        if(playerData.xPos <= 0){
+            playerData.canMoveLeft = false;
+        }
+        else if(playerData.xPos + playerData.width >= ctxData.width){
+            playerData.canMoveRight = false;
+        }
     }
 }
 
 function checkGround(x1, x2, y1, y2, tileType){
-    
     if(tileType == 1){
         if((playerData.xPos >= x1 && playerData.xPos <= x2) || (playerData.xPos + playerData.width >= x1 && playerData.xPos + playerData.width <= x2) ){
             if(playerData.yPos + playerData.height == y1){
                 playerData.inAir = false;
+            }
+        }
+    }
+}
+
+function checkCeiling(x1, x2, y1, y2, tileType){
+    if(tileType == 1){
+        if((playerData.xPos >= x1 && playerData.xPos <= x2) || (playerData.xPos + playerData.width >= x1 && playerData.xPos + playerData.width <= x2) ){
+            if(playerData.yPos == y2){
+                playerData.canJump = false;
+                playerData.jumpTimer = playerData.jumpTimerMax;
             }
         }
     }
