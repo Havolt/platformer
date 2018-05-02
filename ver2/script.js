@@ -26,9 +26,10 @@ let playerData = {
     color: 'black',
     xPos: 50,
     yPos: 440,
-    moveSpeed: 5,
+    moveSpeed: 1,
     jumpSpeed: 8,
     jumpTimer: 0,
+    jumpTimerMax: 9,
     velocity: 0,
     status: 'alive',
     isMoving: false,
@@ -80,8 +81,10 @@ function playerPhysics(){
     getCurrTile(gameData.currLevel.map, playerData);
     //console.log(playerData.direction)
     playerData.inAir = true;
-    checkArea(gameData.currLevel.map, playerData)
-    playerWalk();
+    for(let i = 0; i < 6; i++){
+        checkArea(gameData.currLevel.map, playerData)
+        playerWalk();
+    }
     playerJump();
     playerGravity();
     if(playerData.inAir){console.log(playerData.inAir)}
@@ -109,7 +112,7 @@ function playerJump(){
         playerData.jumpTimer = 0;
         playerData.canJump = true;
     }
-    if(playerData.jumpTimer == 7){
+    if(playerData.jumpTimer == playerData.jumpTimerMax){
         playerData.canJump = false;
     }
     if(playerData.keysDown['32'] && playerData.canJump){
@@ -118,14 +121,14 @@ function playerJump(){
         playerData.inAir = true;
     }
     if(!playerData.keysDown['32'] && playerData.inAir){
-        playerData.jumpTimer = 7;
+        playerData.jumpTimer = playerData.jumpTimerMax;
     }
     
 }
 
 function playerGravity(){
 
-    if((playerData.jumpTimer == 0 || playerData.jumpTimer == 7) && playerData.inAir){
+    if((playerData.jumpTimer == 0 || playerData.jumpTimer == playerData.jumpTimerMax) && playerData.inAir){
         playerData.yPos += playerData.jumpSpeed;
     }
 }
@@ -160,7 +163,6 @@ function checkMove(x1,x2,y1,y2, tileNum){
             }
             else if(((playerData.xPos - playerData.moveSpeed) >= x1) && ((playerData.xPos - playerData.moveSpeed) <= x2) && playerData.xPos > x2 ){
                 playerData.canMoveLeft = false;
-                console.log('lol')
             }
         }
     }
@@ -169,7 +171,7 @@ function checkMove(x1,x2,y1,y2, tileNum){
 function checkGround(x1, x2, y1, y2, tileType){
     
     if(tileType == 1){
-        if(playerData.xPos >= x1 && playerData.xPos <= x2){
+        if((playerData.xPos >= x1 && playerData.xPos <= x2) || (playerData.xPos + playerData.width >= x1 && playerData.xPos + playerData.width <= x2) ){
             if(playerData.yPos + playerData.height == y1){
                 playerData.inAir = false;
             }
